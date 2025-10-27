@@ -99,12 +99,12 @@ class UserService:
 
             return UserDTO.from_entity(user)
 
-    def delete_user(self, user_id: UUID, current_user: User) -> ResponseDTO:
+    def delete_user(self, user_id: UUID, user: User) -> ResponseDTO:
         """Delete a user.
 
         Args:
             user_id (UUID): The ID of the user to delete.
-            current_user (User): The currently authenticated user.
+            user (User): The currently authenticated user.
 
         Raises:
             HTTPException: If the user does not exist or if the current user is not authorized to delete the user.
@@ -119,7 +119,7 @@ class UserService:
             if not user:
                 raise HTTPException(status_code=404, detail="User not found!")
 
-            if user.id != current_user.id:
+            if user.id != user.id:
                 raise HTTPException(
                     status_code=403, detail="Not authorized to delete this user!"
                 )
