@@ -6,3 +6,5 @@ uvicorn==0.38.0
 pyjwt==2.10.1
 bcrypt==5.0.0
 psycopg2
+boto3==1.40.21
+mypy-boto3-bedrock-runtime==1.40.41
