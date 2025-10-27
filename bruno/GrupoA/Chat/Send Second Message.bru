@@ -1,0 +1,27 @@
+meta {
+  name: Send Second Message
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/chat/message
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "content": {
+      "content_type": "text",
+      "text": "Qual meu nome?"
+    },
+    "role": "user",
+    "chat_id": "{{_chat_chat_id}}"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

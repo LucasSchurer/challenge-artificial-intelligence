@@ -1,0 +1,30 @@
+meta {
+  name: Send First Message
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/chat/message
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "content": {
+      "content_type": "text",
+      "text": "Olá! Me chamo João!"
+    },
+    "role": "user"
+  }
+}
+
+script:post-response {
+  bru.setVar("_chat_chat_id", res.body.chat_id)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

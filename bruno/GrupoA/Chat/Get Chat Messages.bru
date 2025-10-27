@@ -1,0 +1,29 @@
+meta {
+  name: Get Chat Messages
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/chat/{{_chat_chat_id}}/messages
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "content": {
+      "content_type": "text",
+      "text": "Olá!"
+    }
+  }
+}
+
+assert {
+  res.body: length 2
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

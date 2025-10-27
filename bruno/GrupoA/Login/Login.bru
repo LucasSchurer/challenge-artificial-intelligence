@@ -1,7 +1,7 @@
 meta {
   name: Login
   type: http
-  seq: 3
+  seq: 5
 }
 
 post {
@@ -12,14 +12,13 @@ post {
 
 body:json {
   {
-    "username": "test_user",
-    "password": "test_password"  
+    "username": "{{username}}",
+    "password": "{{password}}"  
   }
 }
 
 script:post-response {
   bru.setVar("token", res.body.token)
-  bru.setVar("_user_user_id", res.body.id)
 }
 
 settings {

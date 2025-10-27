@@ -1,0 +1,16 @@
+meta {
+  name: Delete Chat
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/chat/{{_chat_chat_id}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
