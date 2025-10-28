@@ -1,0 +1,27 @@
+meta {
+  name: Profile Assessment 1
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/user/continue_profile_assessment
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "content": {
+      "content_type": "text",
+      "text": "Olá! Me chamo João!"
+    },
+    "role": "user",
+    "chat_id": "{{_user_chat_id}}"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Start Profile Assessment
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/user/start_profile_assessment
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  bru.setVar("_user_chat_id", res.body.chat_id)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
