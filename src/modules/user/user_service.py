@@ -7,14 +7,18 @@ import jwt
 from fastapi import HTTPException
 
 from src.db import db_connection
-from src.db.tables import User
+from src.db.tables import User, Agent, Chat
 from src.dto import (
     ResponseDTO,
     UserCreateDTO,
     UserDTO,
     UserLoginDTO,
     UserLoginResponseDTO,
+    MessageDTO,
+    MessageTextContentDTO,
 )
+
+from src.llm import BedrockHandler
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", None)
 
@@ -22,6 +26,7 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", None)
 class UserService:
     def __init__(self):
         self.db_conn = db_connection
+        self.handler = BedrockHandler()
 
     def __create_jwt(self, user_id: UUID, duration=timedelta(days=7)):
         """Create a JSON Web Token (JWT) for a user.
@@ -155,6 +160,52 @@ class UserService:
 
             token = self.__create_jwt(user.id)
             return UserLoginResponseDTO(token=token, id=user.id)
+
+    def assess_profile(self, user: User, message: MessageDTO = None) -> MessageDTO:
+        """Assess user profile through an AI agent.
+
+        Args:
+            user (User): The currently authenticated user.
+            message (MessageDTO, optional): The message to be processed. Defaults to None. If None, a default message is created to start the assessment.
+
+        Raises:
+            HTTPException: If the message is invalid or processing fails.
+            HTTPException: If the user is not authorized.
+
+        Returns:
+            MessageDTO: The response message from the AI agent.
+        """
+        with self.db_conn.get_session() as session:
+            if not message:
+                message = MessageDTO(
+                    role="assistant",
+                    content=MessageTextContentDTO(
+                        text=f"Profile assessment started. Informed user name is: {user.name}. Confirm if this is the user's preferred name."
+                    ),
+                )
+
+            agent_id = os.getenv("PROFILE_ASSESSMENT_AGENT_ID", None)
+            if not agent_id:
+                raise HTTPException(
+                    status_code=500, detail="Profile assessment agent not configured."
+                )
+
+            agent = session.get(Agent, agent_id)
+            if not agent:
+                raise HTTPException(
+                    status_code=404, detail="Profile assessment agent not found."
+                )
+
+            response_message = self.handler.complete(
+                session=session, message=message, user=user, agent=agent
+            )
+
+            user.profile_info = response_message.content.data.get("profile_data", {})
+
+            session.add(user)
+            session.commit()
+
+            return response_message
 
 
 user_service: UserService = UserService()
