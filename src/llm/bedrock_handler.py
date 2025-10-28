@@ -23,7 +23,6 @@ class BedrockHandler:
         self.client: BedrockRuntimeClient = boto3.client(
             "bedrock-runtime", region_name="us-east-2"
         )
-        self.model = "us.anthropic.claude-3-5-haiku-20241022-v1:0"
 
     def __get_create_chat(self, session: Session, chat_id: UUID, user: User) -> Chat:
         """Get or create a chat for the user.
@@ -110,6 +109,7 @@ class BedrockHandler:
         user: User,
         system_prompt: str = None,
         agent: Agent = None,
+        model_id: str = "us.anthropic.claude-3-5-haiku-20241022-v1:0",
     ) -> MessageDTO:
         """Handle an incoming message and get a response from the Bedrock model.
 
@@ -145,7 +145,7 @@ class BedrockHandler:
         try:
             if output_format:
                 response = self.client.converse(
-                    modelId=self.model,
+                    modelId=model_id,
                     messages=formatted_messages,
                     system=system,
                     toolConfig={
@@ -162,7 +162,7 @@ class BedrockHandler:
                 )
             else:
                 response = self.client.converse(
-                    modelId=self.model,
+                    modelId=model_id,
                     messages=formatted_messages,
                     system=system,
                 )

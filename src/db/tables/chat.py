@@ -21,3 +21,5 @@ class Chat(Base):
     messages: Mapped[list["Message"]] = relationship(  # type: ignore
         "Message", back_populates="chat", cascade="all, delete-orphan"
     )
+
+    plans: Mapped[list["Plan"]] = relationship("Plan", back_populates="chat")  # type: ignore
