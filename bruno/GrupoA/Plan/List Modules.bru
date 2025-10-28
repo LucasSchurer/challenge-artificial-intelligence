@@ -1,0 +1,20 @@
+meta {
+  name: List Modules
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{host}}/plan/{{_plan_plan_id}}/modules
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  bru.setVar("_plan_module_id", res.body[0].module_id)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

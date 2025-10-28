@@ -1,0 +1,26 @@
+meta {
+  name: Develop Plan 1
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/plan/{{_plan_plan_id}}/develop
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "content": {
+      "content_type": "text",
+      "text": "não"
+    },
+    "role": "user"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

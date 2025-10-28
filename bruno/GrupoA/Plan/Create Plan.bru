@@ -1,0 +1,26 @@
+meta {
+  name: Create Plan
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/plan
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "plan_id": null
+  }
+}
+
+script:post-response {
+  bru.setVar("_plan_plan_id", res.body.plan_id)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

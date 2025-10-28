@@ -1,0 +1,15 @@
+meta {
+  name: List Plans
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/plan
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
