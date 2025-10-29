@@ -141,7 +141,6 @@ class BedrockHandler:
             if agent.output_format:
                 output_format = agent.output_format
                 output_format = {"toolSpec": output_format}
-
         try:
             if output_format:
                 response = self.client.converse(

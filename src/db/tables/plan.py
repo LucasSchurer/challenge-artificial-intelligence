@@ -19,6 +19,7 @@ class Plan(Base):
         server_default=text("now()"),
         nullable=False,
     )
+    status: Mapped[str] = mapped_column(nullable=False, default="creating_outline")
 
     modules: Mapped[list["Module"]] = relationship(  # type: ignore
         "Module", back_populates="plan", cascade="all, delete-orphan"

@@ -10,4 +10,5 @@ from .plan import (
     ContentDTO,
     ContentCreateDTO,
     ModuleDTO,
+    PlanWithAllMessagesDTO,
 )

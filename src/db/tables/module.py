@@ -15,6 +15,7 @@ class Module(Base):
     title: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
     order: Mapped[int] = mapped_column(nullable=False, default=1)
+    status: Mapped[str] = mapped_column(nullable=False, default="creating_outline")
 
     plan: Mapped["Plan"] = relationship(  # type: ignore
         "Plan", back_populates="modules"

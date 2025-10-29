@@ -39,3 +39,13 @@ async def avaliacao(request: Request):
 @interface_router.get("/biblioteca", response_class=HTMLResponse)
 async def biblioteca(request: Request):
     return templates.TemplateResponse("biblioteca.html", {"request": request})
+
+
+@interface_router.get("/plano", response_class=HTMLResponse)
+async def plano(request: Request):
+    return templates.TemplateResponse("plano.html", {"request": request})
+
+
+@interface_router.get("/meus-planos", response_class=HTMLResponse)
+async def meus_planos(request: Request):
+    return templates.TemplateResponse("meus-planos.html", {"request": request})

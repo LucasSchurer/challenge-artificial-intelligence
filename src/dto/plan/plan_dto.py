@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import Field
 
 from src.dto import BaseDTO, MessageDTO
-from typing import Optional
+from typing import Optional, Literal
 from src.db.tables import Plan
 
 
@@ -12,6 +12,9 @@ class PlanBaseDTO(BaseDTO):
     user_id: UUID = Field(alias="user_id")
     description: Optional[str] = Field(alias="description", default=None)
     chat_id: Optional[UUID] = Field(alias="chat_id", default=None)
+    status: Literal["creating_outline", "creating_modules", "created", "completed"] = (
+        Field(alias="status")
+    )
 
 
 class PlanDTO(PlanBaseDTO):
@@ -27,6 +30,23 @@ class PlanDTO(PlanBaseDTO):
             last_message = entity.chat.messages[-1] if entity.chat.messages else None
             if last_message:
                 dto.last_message = MessageDTO.from_entity(last_message)
+
+        return dto
+
+
+class PlanWithAllMessagesDTO(PlanDTO):
+    messages: Optional[list[MessageDTO]] = Field(alias="messages", default=None)
+
+    @classmethod
+    def from_entity(
+        cls: type["PlanWithAllMessagesDTO"], entity: Plan
+    ) -> "PlanWithAllMessagesDTO":
+        dto = super().from_entity(entity)
+
+        if entity.chat:
+            dto.messages = [
+                MessageDTO.from_entity(message) for message in entity.chat.messages[1:]
+            ]
 
         return dto
 

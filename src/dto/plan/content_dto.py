@@ -11,6 +11,8 @@ class ContentBaseDTO(BaseDTO):
     module_id: UUID = Field(alias="module_id")
     text_content: Optional[str] = Field(alias="text_content", default=None)
     content_type: Literal["text"] = Field(alias="content_type")
+    title: str = Field(alias="title")
+    order: int = Field(alias="order", default=0)
 
 
 class ContentDTO(ContentBaseDTO):
