@@ -1,0 +1,16 @@
+meta {
+  name: Generate Modules
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{host}}/plan/{{_plan_plan_id}}/generate_modules
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
