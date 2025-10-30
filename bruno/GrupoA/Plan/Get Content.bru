@@ -1,0 +1,16 @@
+meta {
+  name: Get Content
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{host}}/plan/{{_plan_plan_id}}/modules/{{_plan_module_id}}/contents/{{_plan_content_id}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

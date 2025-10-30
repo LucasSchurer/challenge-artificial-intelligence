@@ -1,13 +1,17 @@
 meta {
   name: Get Module
   type: http
-  seq: 6
+  seq: 7
 }
 
 get {
   url: {{host}}/plan/{{_plan_plan_id}}/modules/{{_plan_module_id}}
   body: none
   auth: inherit
+}
+
+script:post-response {
+  bru.setVar("_plan_content_id", res.body.contents[0].content_id)
 }
 
 settings {
