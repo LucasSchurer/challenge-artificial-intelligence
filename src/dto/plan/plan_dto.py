@@ -15,6 +15,19 @@ class PlanBaseDTO(BaseDTO):
     status: Literal["creating_outline", "creating_modules", "created", "completed"] = (
         Field(alias="status")
     )
+    progress: int = Field(alias="progress", default=0)
+    modules_count: int = Field(alias="modules_count", default=0)
+
+    @classmethod
+    def from_entity(cls, entity: Plan):
+        dto: PlanBaseDTO = super().from_entity(entity)
+        dto.modules_count = len(entity.modules)
+
+        for module in entity.modules:
+            if module.status == "completed":
+                dto.progress += 1
+
+        return dto
 
 
 class PlanDTO(PlanBaseDTO):

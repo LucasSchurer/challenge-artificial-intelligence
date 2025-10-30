@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
+from fastapi import HTTPException
 from sqlalchemy import ForeignKey, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -24,3 +25,14 @@ class Module(Base):
     contents: Mapped[list["Content"]] = relationship(  # type: ignore
         "Content", back_populates="module", cascade="all, delete-orphan"
     )
+
+    @classmethod
+    def get_by_id(cls, session, id, user_id: UUID = None):
+        instance = super().get_by_id(session, id)
+
+        if user_id and instance.plan.user_id != user_id:
+            raise HTTPException(
+                status_code=403, detail="Not authorized to access this module."
+            )
+
+        return instance

@@ -18,6 +18,8 @@ from src.dto import (
     MessageTextContentDTO,
     ModuleDTO,
     PlanWithAllMessagesDTO,
+    ResponseDTO,
+    ContentListDTO,
 )
 import os
 
@@ -37,20 +39,6 @@ class PlanService:
                 "PLAN_OUTLINE_CREATOR_AGENT_ID environment variable is not set."
             )
 
-        module_outline_creator_agent_id = os.getenv(
-            "MODULE_OUTLINE_CREATOR_AGENT_ID", None
-        )
-        if not module_outline_creator_agent_id:
-            raise ValueError(
-                "MODULE_OUTLINE_CREATOR_AGENT_ID environment variable is not set."
-            )
-
-        text_content_creator_agent_id = os.getenv("TEXT_CONTENT_CREATOR_AGENT_ID", None)
-        if not text_content_creator_agent_id:
-            raise ValueError(
-                "TEXT_CONTENT_CREATOR_AGENT_ID environment variable is not set."
-            )
-
         with self.db_conn.get_session() as session:
             self.plan_outline_creator_agent = session.get(
                 Agent, plan_outline_creator_agent_id
@@ -58,20 +46,6 @@ class PlanService:
             if not self.plan_outline_creator_agent:
                 raise ValueError(
                     f"Agent with ID {plan_outline_creator_agent_id} not found in the database."
-                )
-            self.text_content_creator_agent = session.get(
-                Agent, text_content_creator_agent_id
-            )
-            if not self.text_content_creator_agent:
-                raise ValueError(
-                    f"Agent with ID {text_content_creator_agent_id} not found in the database."
-                )
-            self.module_outline_creator_agent = session.get(
-                Agent, module_outline_creator_agent_id
-            )
-            if not self.module_outline_creator_agent:
-                raise ValueError(
-                    f"Agent with ID {module_outline_creator_agent_id} not found in the database."
                 )
 
     def list_plans(self, user: User) -> List[PlanDTO]:
@@ -86,6 +60,20 @@ class PlanService:
         with self.db_conn.get_session() as session:
             plans = session.query(Plan).filter(Plan.user_id == user.id).all()
             return PlanDTO.from_entities(plans)
+
+    def get_plan(self, plan_id: UUID, user: User) -> PlanWithAllMessagesDTO:
+        """Get a specific plan with all messages.
+
+        Args:
+            plan_id (UUID): The ID of the plan.
+            user (User): The currently authenticated user.
+
+        Returns:
+            PlanWithAllMessagesDTO: The requested plan with all messages.
+        """
+        with self.db_conn.get_session() as session:
+            plan = Plan.get_by_id(session, plan_id, user.id)
+            return PlanWithAllMessagesDTO.from_entity(plan)
 
     def create_plan(self, user: User) -> PlanDTO:
         """Create a new plan for a user.
@@ -131,17 +119,14 @@ class PlanService:
             plan_id (UUID): The ID of the plan to develop.
             user (User): The currently authenticated user.
 
-        Raises:
-            HTTPException: If the plan does not exist or does not belong to the user.
-
         Returns:
             PlanDTO: The developed plan.
         """
         with self.db_conn.get_session() as session:
-            plan = session.get(Plan, plan_id)
+            plan = Plan.get_by_id(session, plan_id, user.id)
 
-            if not plan or plan.user_id != user.id:
-                raise HTTPException(status_code=404, detail="Plan not found!")
+            if plan.status == "created":
+                return PlanDTO.from_entity(plan)
 
             message.chat_id = plan.chat_id
 
@@ -182,214 +167,6 @@ class PlanService:
 
             session.commit()
             return PlanDTO.from_entity(plan)
-
-    def __generate_text_content(
-        self,
-        base_message: MessageDTO,
-        session: Session,
-        module_id: UUID,
-        user: User,
-        order: int,
-    ) -> Content:
-        response_message = self.handler.complete(
-            session=session,
-            message=base_message,
-            user=user,
-            agent=self.text_content_creator_agent,
-            model_id="us.anthropic.claude-3-5-haiku-20241022-v1:0",
-        )
-
-        content = Content(
-            module_id=module_id,
-            title="Generated Text Content",
-            content_type="text",
-            text_content=response_message.content.text,
-            order=order,
-        )
-
-        session.add(content)
-        session.commit()
-
-        return content
-
-    def __generate_content(
-        self,
-        module_id: UUID,
-        user_id: UUID,
-        content_type: str,
-        content_objective: str,
-        order: int,
-    ) -> Content:
-        content_mapping = {
-            "text": self.__generate_text_content,
-        }
-
-        if content_type not in content_mapping:
-            return None
-
-        with self.db_conn.get_session() as session:
-            user = session.get(User, user_id)
-
-            message = MessageDTO(
-                user_id=user_id,
-                content=MessageTextContentDTO(
-                    text=f"User Profile Data: {user.profile_info}\nContent Objective: {content_objective}"
-                ),
-                role="user",
-            )
-
-            return content_mapping[content_type](
-                base_message=message,
-                session=session,
-                module_id=module_id,
-                user=user,
-                order=order,
-            )
-
-    def generate_modules(self, plan_id: UUID, user: User) -> List[ModuleDTO]:
-        with self.db_conn.get_session() as session:
-            plan = session.get(Plan, plan_id)
-
-            if not plan or plan.user_id != user.id:
-                raise HTTPException(status_code=404, detail="Plan not found!")
-
-            modules_ids = [m.id for m in plan.modules]
-            plan.status = "creating_modules"
-            session.commit()
-
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            futures = [
-                executor.submit(self.generate_module, m, user) for m in modules_ids
-            ]
-            results = [f.result() for f in futures]
-
-        with self.db_conn.get_session() as session:
-            plan = session.get(Plan, plan_id)
-
-            if not plan or plan.user_id != user.id:
-                raise HTTPException(status_code=404, detail="Plan not found!")
-
-            plan.status = "created"
-            session.commit()
-
-            return ModuleDTO.from_entities(plan.modules)
-
-    def generate_module(self, module_id: UUID, user: User) -> ModuleDTO:
-        with self.db_conn.get_session() as session:
-            module = session.get(Module, module_id)
-            plan = session.get(Plan, module.plan_id)
-            module.status = "creating_contents"
-
-            message = MessageDTO(
-                user_id=user.id,
-                content=MessageTextContentDTO(
-                    text=f"User Profile Data: {user.profile_info}\nPlan Title: {plan.title}\nPlan Description: {plan.description}\nModule Title: {module.title}. Module Description: {module.description}"
-                ),
-                role="user",
-            )
-
-            response_message = self.handler.complete(
-                session=session,
-                message=message,
-                user=user,
-                agent=self.module_outline_creator_agent,
-                model_id="us.anthropic.claude-3-5-sonnet-20240620-v1:0",
-            )
-
-            contents = response_message.content.data.get("contents", [])
-            session.commit()
-
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [
-                executor.submit(
-                    self.__generate_content,
-                    module_id,
-                    user.id,
-                    content.get("type", "text"),
-                    content.get("objective", ""),
-                    i,
-                )
-                for i, content in enumerate(contents)
-            ]
-
-            results = [f.result() for f in futures]
-
-        with self.db_conn.get_session() as session:
-            module = session.get(Module, module_id)
-            module.status = "created"
-            session.commit()
-
-            return ModuleDTO.from_entity(module)
-
-    def list_modules(self, plan_id: UUID, user: User) -> List[ModuleListDTO]:
-        """List modules for a plan.
-
-        Args:
-            plan_id (UUID): The ID of the plan.
-            user (User): The currently authenticated user.
-
-        Raises:
-            HTTPException: If the plan does not exist or does not belong to the user.
-
-        Returns:
-            List[PlanDTO]: The list of modules belonging to the plan.
-        """
-        with self.db_conn.get_session() as session:
-            plan = session.get(Plan, plan_id)
-
-            if not plan or plan.user_id != user.id:
-                raise HTTPException(status_code=404, detail="Plan not found!")
-
-            modules = sorted(plan.modules, key=lambda m: m.order)
-            return ModuleListDTO.from_entities(modules)
-
-    def get_module(self, plan_id: UUID, module_id: UUID, user: User) -> ModuleDTO:
-        """Get a specific module for a plan.
-
-        Args:
-            plan_id (UUID): The ID of the plan.
-            module_id (UUID): The ID of the module.
-            user (User): The currently authenticated user.
-
-        Raises:
-            HTTPException: If the plan or module does not exist or does not belong to the user.
-
-        Returns:
-            ModuleDTO: The requested module.
-        """
-        with self.db_conn.get_session() as session:
-            plan = session.get(Plan, plan_id)
-
-            if not plan or plan.user_id != user.id:
-                raise HTTPException(status_code=404, detail="Plan not found!")
-
-            module = session.get(Module, module_id)
-
-            if not module or module.plan_id != plan.id:
-                raise HTTPException(status_code=404, detail="Module not found!")
-
-            return ModuleDTO.from_entity(module)
-
-    def get_plan(self, plan_id: UUID, user: User) -> PlanWithAllMessagesDTO:
-        """Get a specific plan with all messages.
-
-        Args:
-            plan_id (UUID): The ID of the plan.
-            user (User): The currently authenticated user.
-
-        Raises:
-            HTTPException: If the plan does not exist or does not belong to the user.
-
-        Returns:
-            PlanWithAllMessagesDTO: The requested plan with all messages.
-        """
-        with self.db_conn.get_session() as session:
-            plan = session.get(Plan, plan_id)
-
-            if not plan or plan.user_id != user.id:
-                raise HTTPException(status_code=404, detail="Plan not found!")
-
-            return PlanWithAllMessagesDTO.from_entity(plan)
 
 
 plan_service: PlanService = PlanService()
