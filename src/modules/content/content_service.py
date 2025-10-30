@@ -140,8 +140,10 @@ class ContentService:
             content = Content.get_by_id(session, content_id, user.id)
             return ContentDTO.from_entity(content)
 
-    def complete_content(self, content_id: UUID, user: User) -> ResponseDTO:
-        """Complete content for a specific plan.
+    def update_completed_status(
+        self, content_id: UUID, user: User, completed: bool
+    ) -> ResponseDTO:
+        """Update content completion status.
 
         Args:
             content_id (UUID): The ID of the content.
@@ -153,11 +155,17 @@ class ContentService:
         with self.db_conn.get_session() as session:
             content = Content.get_by_id(session, content_id, user.id)
 
-            content.status = "completed"
+            if completed:
+                status = "completed"
+            else:
+                status = "created"
+
+            content.status = status
             session.commit()
 
             return ResponseDTO(
-                status_code=200, message="Content completed successfully."
+                message=f"Content completion status set to '{status}' successfully.",
+                status_code=200,
             )
 
 

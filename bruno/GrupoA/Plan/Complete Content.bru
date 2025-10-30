@@ -5,9 +5,13 @@ meta {
 }
 
 put {
-  url: {{host}}/plan/{{_plan_plan_id}}/modules/{{_plan_module_id}}/contents/{{_plan_content_id}}/complete
+  url: {{host}}/plan/{{_plan_plan_id}}/modules/{{_plan_module_id}}/contents/{{_plan_content_id}}/complete?completed=true
   body: none
   auth: inherit
+}
+
+params:query {
+  completed: true
 }
 
 settings {

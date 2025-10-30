@@ -168,8 +168,10 @@ class ModuleService:
             module = Module.get_by_id(session, module_id, user.id)
             return ModuleDTO.from_entity(module)
 
-    def complete_module(self, module_id: UUID, user: User) -> ResponseDTO:
-        """Complete module for a specific plan.
+    def update_completed_status(
+        self, module_id: UUID, user: User, completed: bool
+    ) -> ResponseDTO:
+        """Update module completion status.
 
         Args:
             module_id (UUID): The ID of the module.
@@ -181,15 +183,21 @@ class ModuleService:
         with self.db_conn.get_session() as session:
             module = Module.get_by_id(session, module_id, user.id)
 
-            module.status = "completed"
+            if completed:
+                status = "completed"
+            else:
+                status = "created"
+
+            module.status = status
 
             for content in module.contents:
-                content.status = "completed"
+                content.status = status
 
             session.commit()
 
             return ResponseDTO(
-                message="Module completed successfully.", status_code=200
+                message=f"Module completion status set to '{status}' successfully.",
+                status_code=200,
             )
 
 

@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends, Query
 
 from src.db.tables import User
 from src.dto import (
@@ -45,10 +45,11 @@ def get_content(
     "/{content_id}/complete",
     response_model=ResponseDTO,
 )
-def complete_content(
+def update_completed_status(
     plan_id: UUID,
     module_id: UUID,
     content_id: UUID,
+    completed: bool = Query(..., description="Completion status to set"),
     current_user=Depends(get_current_user),
 ):
-    return content_service.complete_content(content_id, current_user)
+    return content_service.update_completed_status(content_id, current_user, completed)

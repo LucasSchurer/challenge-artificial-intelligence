@@ -1,20 +1,9 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends, Query
 
-from src.db.tables import User
-from src.dto import (
-    ChatDTO,
-    MessageDTO,
-    ResponseDTO,
-    PlanDTO,
-    ModuleListDTO,
-    ContentDTO,
-    ContentListDTO,
-    ModuleDTO,
-    PlanWithAllMessagesDTO,
-)
+from src.dto import ModuleDTO, ModuleListDTO, ResponseDTO
 from src.security import get_current_user
 
 from .module_service import module_service
@@ -33,9 +22,10 @@ def get_module(plan_id: UUID, module_id: UUID, current_user=Depends(get_current_
 
 
 @module_router.put("/{module_id}/complete", response_model=ResponseDTO)
-def complete_module(
+def update_completed_status(
     plan_id: UUID,
     module_id: UUID,
+    completed: bool = Query(..., description="Completion status to set"),
     current_user=Depends(get_current_user),
 ):
-    return module_service.complete_module(module_id, current_user)
+    return module_service.update_completed_status(module_id, current_user, completed)
