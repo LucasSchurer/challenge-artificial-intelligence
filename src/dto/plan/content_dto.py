@@ -13,6 +13,7 @@ class ContentBaseDTO(BaseDTO):
     title: str = Field(alias="title")
     order: int = Field(alias="order", default=0)
     status: Literal["created", "completed"] = Field(alias="status", default="created")
+    description: Optional[str] = Field(alias="description", default=None)
 
 
 class ContentDTO(ContentBaseDTO):

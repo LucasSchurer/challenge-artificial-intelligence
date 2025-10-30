@@ -39,6 +39,12 @@ class ModuleDTO(ModuleBaseDTO):
     id: UUID = Field(alias="module_id")
     contents: Optional[list[ContentListDTO]] = Field(alias="contents", default=None)
 
+    @classmethod
+    def from_entity(cls, entity: Module):
+        dto: ModuleDTO = super().from_entity(entity)
+        dto.contents = sorted(dto.contents or [], key=lambda c: c.order)
+        return dto
+
 
 class ModuleCreateDTO(ModuleBaseDTO):
     pass

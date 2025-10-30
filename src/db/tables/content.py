@@ -18,6 +18,7 @@ class Content(Base):
     content_type: Mapped[str] = mapped_column(nullable=False)
     order: Mapped[int] = mapped_column(nullable=False, default=0)
     status: Mapped[str] = mapped_column(nullable=False, default="created")
+    description: Mapped[str] = mapped_column(nullable=True)
 
     module: Mapped["Module"] = relationship(  # type: ignore
         "Module", back_populates="contents"
