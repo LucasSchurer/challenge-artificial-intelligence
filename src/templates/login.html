@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Login - +A Educação{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Entrar</h1>
+            <p>Acesse sua conta para continuar aprendendo</p>
+        </div>
+        
+        <form id="loginForm" class="auth-form">
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    required 
+                    placeholder="Digite seu usuário"
+                    autocomplete="username"
+                >
+                <span class="error-message" id="usernameError"></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <div class="password-input">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password"
+                    >
+                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-message" id="passwordError"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+                <span class="btn-text">Entrar</span>
+                <span class="btn-loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    Entrando...
+                </span>
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Não tem uma conta? <a href="/ui/registro" class="auth-link">Criar conta</a></p>
+        </div>
+    </div>
+    
+    <div class="auth-illustration">
+        <div class="illustration-content">
+            <h2>Bem-vindo de volta!</h2>
+            <p>Continue sua jornada de aprendizagem personalizada com conteúdo adaptado especialmente para você.</p>
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-icon">🎯</span>
+                    <span>Aprendizado personalizado</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📚</span>
+                    <span>Conteúdo adaptativo</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🚀</span>
+                    <span>Progresso contínuo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/auth.js') }}"></script>
+{% endblock %}

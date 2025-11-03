@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - +A Educação{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/chat.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <div class="chat-header">
+            <h3>Conversas</h3>
+            <button class="btn-new-chat" onclick="startNewChat()">
+                <span>+</span> Nova Conversa
+            </button>
+        </div>
+        <div class="chat-history">
+            <!-- Histórico de conversas será carregado aqui -->
+        </div>
+    </div>
+    
+    <div class="chat-main">
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <div class="welcome-content">
+                    <h2>Olá! 👋</h2>
+                    <p>Sou seu assistente de aprendizagem adaptativa. Vou te ajudar a identificar suas dificuldades e criar conteúdo personalizado para você.</p>
+                    <p>Para começar, me conte: <strong>qual área da programação você gostaria de estudar hoje?</strong></p>
+                    <div class="quick-topics">
+                        <button class="topic-btn" onclick="selectTopic('Python Básico')">Python Básico</button>
+                        <button class="topic-btn" onclick="selectTopic('JavaScript')">JavaScript</button>
+                        <button class="topic-btn" onclick="selectTopic('Estruturas de Dados')">Estruturas de Dados</button>
+                        <button class="topic-btn" onclick="selectTopic('Algoritmos')">Algoritmos</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <textarea 
+                    id="chatInput" 
+                    placeholder="Digite sua mensagem..." 
+                    rows="1"
+                    onkeydown="handleKeyDown(event)"
+                ></textarea>
+                <button id="sendButton" onclick="sendMessage()" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-hints">
+                <span class="hint">Pressione Enter para enviar, Shift+Enter para nova linha</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading indicator -->
+<div class="loading-indicator" id="loadingIndicator" style="display: none;">
+    <div class="loading-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/chat.js') }}"></script>
+{% endblock %}

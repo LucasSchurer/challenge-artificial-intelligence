@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Criar Conta - +A Educação{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Criar Conta</h1>
+            <p>Junte-se à nossa plataforma de aprendizagem adaptativa</p>
+        </div>
+        
+        <form id="registerForm" class="auth-form">
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    required 
+                    placeholder="Digite seu nome completo"
+                    autocomplete="name"
+                >
+                <span class="error-message" id="nameError"></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    required 
+                    placeholder="Escolha um nome de usuário"
+                    autocomplete="username"
+                >
+                <span class="error-message" id="usernameError"></span>
+                <span class="help-text">Sem espaços, apenas letras, números e _</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <div class="password-input">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        placeholder="Crie uma senha segura"
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-message" id="passwordError"></span>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar">
+                        <div class="strength-fill"></div>
+                    </div>
+                    <span class="strength-text">Digite uma senha</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Senha</label>
+                <div class="password-input">
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        required 
+                        placeholder="Confirme sua senha"
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-message" id="confirmPasswordError"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full" id="registerBtn">
+                <span class="btn-text">Criar Conta</span>
+                <span class="btn-loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    Criando conta...
+                </span>
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Já tem uma conta? <a href="/ui/login" class="auth-link">Fazer login</a></p>
+        </div>
+    </div>
+    
+    <div class="auth-illustration">
+        <div class="illustration-content">
+            <h2>Comece sua jornada!</h2>
+            <p>Crie sua conta e tenha acesso a uma experiência de aprendizagem única e personalizada.</p>
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-icon">🎯</span>
+                    <span>Conteúdo personalizado</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <span>Acompanhe seu progresso</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🤖</span>
+                    <span>IA adaptativa</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/auth.js') }}"></script>
+{% endblock %}

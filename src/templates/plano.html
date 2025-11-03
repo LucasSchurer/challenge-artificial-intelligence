@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Criando Plano de Estudos - +A Educação{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/plano.css') }}?v=2">
+{% endblock %}
+
+{% block content %}
+<!-- Creation Mode (Chat + Canvas) -->
+<div class="plano-container" id="creationMode">
+    <!-- Chat Section (Left) -->
+    <div class="chat-section">
+        <div class="chat-header">
+            <h2>Criando seu Plano</h2>
+            <div class="chat-status">
+                <span class="status-indicator" id="chatStatus">Conversando com IA</span>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be populated here -->
+        </div>
+        
+        <div class="chat-input-container">
+            <div class="input-group">
+                <input type="text" id="messageInput" placeholder="Digite sua resposta..." disabled>
+                <button id="sendButton" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas Section (Right) -->
+    <div class="canvas-section">
+        <div class="canvas-header">
+            <h2>Seu Plano de Estudos</h2>
+            <div class="plan-info" id="planInfo">
+                <span class="plan-title" id="planTitle">Carregando...</span>
+                <span class="plan-difficulty" id="planDifficulty"></span>
+            </div>
+        </div>
+        
+        <div class="modules-container" id="modulesContainer">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+                <p>A IA está criando seu plano personalizado...</p>
+            </div>
+        </div>
+        
+        <div class="canvas-actions" id="canvasActions" style="display: none;">
+            <button class="btn-secondary" onclick="goBack()">Voltar</button>
+            <button class="btn-primary" id="finalizePlan" onclick="finalizePlan()" disabled>
+                Finalizar Plano
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Study Mode (Modules + Content) -->
+<div class="study-mode" id="studyMode" style="display: none;">
+    <!-- Header -->
+    <div class="study-header">
+        <div class="study-header-main">
+            <!-- Left side: Plan info -->
+            <div class="study-plan-info">
+                <div class="study-title-row">
+                    <h1 class="study-title" id="studyTitle">Carregando...</h1>
+                    <span class="study-status-badge" id="studyStatusBadge">Em Andamento</span>
+                </div>
+                <p class="study-description" id="studyDescription">Carregando descrição...</p>
+                <div class="study-info-row">
+                    <span class="study-created-date" id="studyCreatedDate">📅 Criado em: --</span>
+                </div>
+                <div class="study-progress-section">
+                    <div class="progress-label">
+                        <span>Progresso do Plano</span>
+                        <span id="progressCount">0/0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right side: Modules + Actions -->
+            <div class="study-modules-info">
+                <div class="modules-header-row">
+                    <h3>Módulos</h3>
+                    <div class="study-actions">
+                        <div class="dropdown">
+                            <button class="dropdown-toggle" onclick="togglePlanMenu()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="1" fill="currentColor"/>
+                                    <circle cx="19" cy="12" r="1" fill="currentColor"/>
+                                    <circle cx="5" cy="12" r="1" fill="currentColor"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu" id="planDropdown">
+                                <button class="dropdown-item" onclick="viewChatHistory()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    </svg>
+                                    Ver Histórico da Criação
+                                </button>
+                                <button class="dropdown-item disabled" onclick="deletePlan()" disabled>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M3 6H5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                        <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    </svg>
+                                    Excluir Plano
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modules-list-header" id="modulesList">
+                    <!-- Modules will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="study-content-full">        
+        <div class="content-body" id="contentBody">
+            <div class="empty-content">
+                <div class="empty-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                        <path d="M2 3H8C9.1 3 10 3.9 10 5V19C10 20.1 9.1 21 8 21H2V3Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M22 3H16C14.9 3 14 3.9 14 5V19C14 20.1 14.9 21 16 21H22V3Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+                <h3>Bem-vindo ao seu plano de estudos!</h3>
+                <p>Selecione um módulo acima para começar a estudar.</p>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- Chat History Modal -->
+<div class="chat-overlay" id="chatOverlay" onclick="closeChatHistory()">
+    <div class="chat-modal" onclick="event.stopPropagation()">
+        <div class="chat-modal-header">
+            <h3>Histórico da Criação</h3>
+            <button class="close-chat" onclick="closeChatHistory()">×</button>
+        </div>
+        <div class="chat-modal-body" id="chatHistoryBody">
+            <!-- Chat history will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Content Modal -->
+<div class="content-overlay" id="contentOverlay" onclick="closeContentModal()">
+    <div class="content-modal" onclick="event.stopPropagation()">
+        <div class="content-modal-header">
+            <div class="content-modal-title">
+                <h2 id="modalContentTitle">Título do Conteúdo</h2>
+                <div class="content-modal-status">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="modalContentCheckbox" onchange="toggleContentFromModal()">
+                        <span class="checkmark"></span>
+                        Finalizado
+                    </label>
+                </div>
+            </div>
+            <button class="close-content" onclick="closeContentModal()">×</button>
+        </div>
+        
+        <div class="content-modal-body">
+            <div class="content-modal-description" id="modalContentDescription">
+                <!-- Description will be loaded here -->
+            </div>
+            
+            <div class="content-modal-content" id="modalContentBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+        
+        <div class="content-modal-footer">
+            <button class="btn-secondary" onclick="closeContentModal()">Fechar</button>
+            <button class="btn-primary" id="modalToggleButton" onclick="toggleContentFromModal()">
+                Marcar como Concluído
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <p>Iniciando conversa com a IA...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/plano.js') }}?v=2"></script>
+{% endblock %}

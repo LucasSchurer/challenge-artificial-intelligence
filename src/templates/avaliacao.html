@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Avaliação Inicial - +A Educação{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/avaliacao.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="avaliacao-container">
+    <div class="avaliacao-header">
+        <div class="header-minimal">
+            <h2>Avaliação de Perfil</h2>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+        </div>
+        <button class="skip-btn" onclick="skipAssessment()">
+            <span>→</span> Pular Avaliação
+        </button>
+    </div>
+    
+    <div class="avaliacao-chat">
+        <div class="messages-container" id="messagesContainer">
+            <div class="initial-loading">
+                <div class="loading-spinner-large"></div>
+                <p>Preparando sua avaliação personalizada...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="avaliacao-input">
+        <div class="input-wrapper">
+            <textarea 
+                id="avaliacaoInput" 
+                placeholder="Digite sua resposta..." 
+                rows="2"
+                onkeydown="handleKeyDown(event)"
+            ></textarea>
+            <button id="sendBtn" onclick="sendResponse()" disabled>
+                <span>→</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="avaliacao-footer">
+        <button class="btn btn-primary" id="finishBtn" onclick="finishAssessment()" style="display: none;">
+            Finalizar e Criar Plano
+        </button>
+    </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<div class="modal-overlay" id="skipModal" style="display: none;" onclick="closeSkipModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Pular Avaliação?</h3>
+        </div>
+        <div class="modal-body">
+            <p>Tem certeza que deseja pular a avaliação?</p>
+            <p class="modal-warning">Isso pode afetar a qualidade das recomendações personalizadas.</p>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeSkipModal()">Cancelar</button>
+            <button class="btn btn-primary" onclick="confirmSkip()">Sim, Pular</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/avaliacao.js') }}"></script>
+{% endblock %}

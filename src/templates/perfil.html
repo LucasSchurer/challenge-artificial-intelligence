@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil - +A Educação{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/perfil.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <div class="avatar-placeholder">U</div>
+            <button class="change-avatar-btn">Alterar Foto</button>
+        </div>
+        <div class="profile-info">
+            <h1>Usuário</h1>
+            <p class="profile-subtitle">Estudante de Programação</p>
+            <div class="profile-stats">
+                <div class="stat">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Conversas</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Conteúdos Salvos</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Horas de Estudo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile-section">
+            <h2>Preferências de Aprendizagem</h2>
+            <div class="preferences-grid">
+                <div class="preference-card">
+                    <h3>Formato Preferido</h3>
+                    <div class="preference-options">
+                        <label class="preference-option">
+                            <input type="radio" name="format" value="text" checked>
+                            <span class="option-icon">📝</span>
+                            <span>Texto</span>
+                        </label>
+                        <label class="preference-option">
+                            <input type="radio" name="format" value="video">
+                            <span class="option-icon">🎥</span>
+                            <span>Vídeo</span>
+                        </label>
+                        <label class="preference-option">
+                            <input type="radio" name="format" value="audio">
+                            <span class="option-icon">🎧</span>
+                            <span>Áudio</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="preference-card">
+                    <h3>Nível de Dificuldade</h3>
+                    <div class="difficulty-slider">
+                        <input type="range" id="difficultyRange" min="1" max="5" value="3">
+                        <div class="difficulty-labels">
+                            <span>Iniciante</span>
+                            <span>Intermediário</span>
+                            <span>Avançado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preference-card">
+                    <h3>Áreas de Interesse</h3>
+                    <div class="interest-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Estruturas de Dados</span>
+                        <span class="tag">Algoritmos</span>
+                        <span class="tag">Web Development</span>
+                        <span class="tag">Machine Learning</span>
+                    </div>
+                    <button class="add-interest-btn">+ Adicionar Interesse</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>Progresso de Aprendizagem</h2>
+            <div class="progress-overview">
+                <div class="progress-card">
+                    <h4>Python Básico</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                    <span class="progress-text">65% completo</span>
+                </div>
+                <div class="progress-card">
+                    <h4>JavaScript</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%"></div>
+                    </div>
+                    <span class="progress-text">30% completo</span>
+                </div>
+                <div class="progress-card">
+                    <h4>Estruturas de Dados</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 15%"></div>
+                    </div>
+                    <span class="progress-text">15% completo</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>Conteúdos Salvos</h2>
+            <div class="saved-content">
+                <div class="content-item">
+                    <div class="content-icon">📝</div>
+                    <div class="content-info">
+                        <h4>Introdução ao Python</h4>
+                        <p>Conceitos básicos de programação em Python</p>
+                        <span class="content-date">Salvo há 2 dias</span>
+                    </div>
+                    <button class="content-action">Ver</button>
+                </div>
+                <div class="content-item">
+                    <div class="content-icon">🎥</div>
+                    <div class="content-info">
+                        <h4>Loops em JavaScript</h4>
+                        <p>Vídeo explicativo sobre estruturas de repetição</p>
+                        <span class="content-date">Salvo há 1 semana</span>
+                    </div>
+                    <button class="content-action">Ver</button>
+                </div>
+                <div class="empty-state" style="display: none;">
+                    <p>Nenhum conteúdo salvo ainda.</p>
+                    <a href="/ui/chat" class="btn btn-primary">Começar a Aprender</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/perfil.js') }}"></script>
+{% endblock %}

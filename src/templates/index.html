@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Início - +A Educação{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/home.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Bem-vindo ao Sistema de Aprendizagem Adaptativa</h1>
+        <p class="hero-description">
+            Descubra uma nova forma de aprender programação com conteúdo personalizado 
+            que se adapta ao seu ritmo e estilo de aprendizagem.
+        </p>
+        <div class="hero-actions" id="heroActions">
+            <div class="hero-auth" id="heroAuth">
+                <!-- Para usuários não autenticados -->
+                <div class="hero-guest" id="heroGuest">
+                    <a href="/ui/registro" class="btn btn-primary">Começar Agora</a>
+                    <a href="/ui/login" class="btn btn-secondary">Já tenho conta</a>
+                </div>
+                <!-- Para usuários autenticados -->
+                <div class="hero-user" id="heroUser" style="display: none;">
+                    <a href="/ui/painel" class="btn btn-primary">Meu Painel</a>
+                    <a href="/ui/chat" class="btn btn-secondary">Novo Chat</a>
+                </div>
+            </div>
+            <a href="#como-funciona" class="btn btn-secondary">Como Funciona</a>
+        </div>
+    </div>
+</div>
+
+<section id="como-funciona" class="features-section">
+    <h2 class="section-title">Como Funciona</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Avaliação Personalizada</h3>
+            <p>O sistema identifica suas dificuldades e lacunas de conhecimento através de um diálogo intuitivo.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>Conteúdo Adaptativo</h3>
+            <p>Receba materiais em diferentes formatos (texto, vídeo, áudio) adaptados ao seu nível de conhecimento.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Aprendizado Dinâmico</h3>
+            <p>Conteúdo gerado dinamicamente conforme suas necessidades específicas de aprendizagem.</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="cta-content">
+        <h2>Pronto para começar?</h2>
+        <p>Inicie sua jornada de aprendizagem personalizada agora mesmo.</p>
+        <div id="ctaButton">
+            <a href="/ui/registro" class="btn btn-primary btn-large cta-guest">Criar Conta Grátis</a>
+            <a href="/ui/painel" class="btn btn-primary btn-large cta-user" style="display: none;">Ver Painel</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

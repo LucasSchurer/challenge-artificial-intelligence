@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Painel - TRILHA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/painel.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="biblioteca-container">
+
+    
+    <div class="home-content">
+        <!-- CTA Principal -->
+        <div class="hero-cta">
+            <div class="cta-content">
+                <h2>Pronto para aprender algo novo?</h2>
+                <p>Crie um plano de estudos personalizado com IA em poucos minutos</p>
+                <button class="btn-hero" onclick="startNewPlan()">
+                    <span class="btn-icon">✨</span>
+                    Criar Novo Plano
+                </button>
+            </div>
+            <div class="cta-illustration">
+                <svg width="200" height="150" viewBox="0 0 200 150" fill="none">
+                    <rect x="20" y="30" width="160" height="100" rx="8" fill="#f8f9fa" stroke="#e0e0e0" stroke-width="2"/>
+                    <rect x="30" y="45" width="60" height="8" rx="4" fill="#8B1538"/>
+                    <rect x="30" y="60" width="80" height="6" rx="3" fill="#e0e0e0"/>
+                    <rect x="30" y="75" width="70" height="6" rx="3" fill="#e0e0e0"/>
+                    <rect x="30" y="90" width="90" height="6" rx="3" fill="#e0e0e0"/>
+                    <circle cx="140" cy="70" r="20" fill="#8B1538" opacity="0.1"/>
+                    <path d="M135 70L140 75L145 65" stroke="#8B1538" stroke-width="2" fill="none"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Seção de Todos os Planos -->
+        <div class="plans-section">
+            <div class="section-header">
+                <h2>Seus Planos de Estudo</h2>
+                <div class="section-filters">
+                    <button class="filter-btn active" onclick="filterPlans('todos')">Todos</button>
+                    <button class="filter-btn" onclick="filterPlans('criacao')">Em Criação</button>
+                    <button class="filter-btn" onclick="filterPlans('nao-iniciado')">Não Iniciado</button>
+                    <button class="filter-btn" onclick="filterPlans('andamento')">Em Andamento</button>
+                    <button class="filter-btn" onclick="filterPlans('concluido')">Concluído</button>
+                </div>
+            </div>
+            <div class="all-plans" id="allPlans">
+                <!-- Plans will be loaded here -->
+            </div>
+            <div class="skeleton-loading" id="skeletonLoading">
+                <div class="skeleton-card">
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-status"></div>
+                    <div class="skeleton-description">
+                        <div class="skeleton-description-line"></div>
+                        <div class="skeleton-description-line"></div>
+                        <div class="skeleton-description-line"></div>
+                    </div>
+                    <div class="skeleton-progress">
+                        <div class="skeleton-progress-label">
+                            <div class="skeleton-progress-text"></div>
+                            <div class="skeleton-progress-number"></div>
+                        </div>
+                        <div class="skeleton-progress-bar"></div>
+                    </div>
+                    <div class="skeleton-meta">
+                        <div class="skeleton-meta-item"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-status"></div>
+                    <div class="skeleton-description">
+                        <div class="skeleton-description-line"></div>
+                        <div class="skeleton-description-line"></div>
+                        <div class="skeleton-description-line"></div>
+                    </div>
+                    <div class="skeleton-progress">
+                        <div class="skeleton-progress-label">
+                            <div class="skeleton-progress-text"></div>
+                            <div class="skeleton-progress-number"></div>
+                        </div>
+                        <div class="skeleton-progress-bar"></div>
+                    </div>
+                    <div class="skeleton-meta">
+                        <div class="skeleton-meta-item"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-status"></div>
+                    <div class="skeleton-description">
+                        <div class="skeleton-description-line"></div>
+                        <div class="skeleton-description-line"></div>
+                        <div class="skeleton-description-line"></div>
+                    </div>
+                    <div class="skeleton-progress">
+                        <div class="skeleton-progress-label">
+                            <div class="skeleton-progress-text"></div>
+                            <div class="skeleton-progress-number"></div>
+                        </div>
+                        <div class="skeleton-progress-bar"></div>
+                    </div>
+                    <div class="skeleton-meta">
+                        <div class="skeleton-meta-item"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="empty-plans" id="emptyPlans" style="display: none;">
+                <div class="empty-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+                        <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <h3>Nenhum plano encontrado</h3>
+                <p>Que tal criar seu primeiro plano de estudos personalizado?</p>
+                <button class="btn-primary" onclick="startNewPlan()">Criar Primeiro Plano</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/painel.js') }}"></script>
+{% endblock %}
