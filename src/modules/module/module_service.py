@@ -118,6 +118,7 @@ class ModuleService:
             for i, content in enumerate(contents):
                 content_type = content.get("type", None)
                 content_objective = content.get("content", None)
+                content_title = content.get("title", None)
                 if content_type and content_objective:
                     futures.append(
                         executor.submit(
@@ -126,6 +127,7 @@ class ModuleService:
                             user.id,
                             content_type,
                             content_objective,
+                            content_title,
                             i,
                         )
                     )

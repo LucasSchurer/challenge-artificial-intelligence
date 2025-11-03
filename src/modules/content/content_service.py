@@ -46,6 +46,8 @@ class ContentService:
         module_id: UUID,
         user: User,
         order: int,
+        description: str,
+        title: str,
         knowledge_base: KnowledgeBase = None,
     ) -> Content:
         """Generate text content using the completion handler.
@@ -72,14 +74,12 @@ class ContentService:
 
         content = Content(
             module_id=module_id,
-            title="Generated Text Content",
+            title=title,
+            description=description,
             content_type="text",
             text_content=response_message.content.text,
             order=order,
         )
-
-        session.add(content)
-        session.commit()
 
         return content
 
@@ -90,6 +90,8 @@ class ContentService:
         module_id: UUID,
         user: User,
         order: int,
+        description: str,
+        title: str,
         knowledge_base: KnowledgeBase = None,
     ) -> Content | None:
         """Retrieve image content from the knowledge base using RAG.
@@ -122,14 +124,12 @@ class ContentService:
 
         content = Content(
             module_id=module_id,
-            title="Generated Image Content",
+            title=title,
+            description=description,
             content_type="image",
             order=order,
             source_document_id=referenced_documents[0],
         )
-
-        session.add(content)
-        session.commit()
 
         return content
 
@@ -140,6 +140,8 @@ class ContentService:
         module_id: UUID,
         user: User,
         order: int,
+        description: str,
+        title: str,
         knowledge_base: KnowledgeBase = None,
     ) -> Content | None:
         """Retrieve video content from the knowledge base using RAG.
@@ -172,14 +174,12 @@ class ContentService:
 
         content = Content(
             module_id=module_id,
-            title="Generated Video Content",
+            title=title,
+            description=description,
             content_type="video",
             order=order,
             source_document_id=referenced_documents[0],
         )
-
-        session.add(content)
-        session.commit()
 
         return content
 
@@ -189,6 +189,7 @@ class ContentService:
         user_id: UUID,
         content_type: str,
         content_objective: str,
+        content_title: str,
         order: int,
     ) -> Content:
         """Generate or retrieve multimedia content based on the specified type.
@@ -228,14 +229,22 @@ class ContentService:
                 role="user",
             )
 
-            return content_mapping[content_type](
+            content = content_mapping[content_type](
                 base_message=message,
                 session=session,
                 module_id=module_id,
                 user=user,
                 order=order,
+                title=content_title,
+                description=content_objective,
                 knowledge_base=knowledge_base,
             )
+
+            if content:
+                session.add(content)
+                session.commit()
+
+            return content
 
     def list_contents(self, module_id: UUID, user: User) -> List[ContentListDTO]:
         """List contents for a module.
