@@ -1,0 +1,16 @@
+meta {
+  name: List Knowledge Bases
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/knowledge_base
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

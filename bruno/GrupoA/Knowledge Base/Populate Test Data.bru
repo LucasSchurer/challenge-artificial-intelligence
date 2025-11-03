@@ -1,0 +1,15 @@
+meta {
+  name: Populate Test Data
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{host}}/knowledge_base/populate_test_data
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

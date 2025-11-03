@@ -1,0 +1,16 @@
+meta {
+  name: Delete Knowledge Base
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{host}}/knowledge_base/{{_kb_kb_id}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

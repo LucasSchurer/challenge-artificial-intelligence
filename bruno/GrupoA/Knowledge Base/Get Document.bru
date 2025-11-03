@@ -1,0 +1,16 @@
+meta {
+  name: Get Document
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{host}}/knowledge_base/{{_kb_kb_id}}/documents/{{_kb_document_id}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

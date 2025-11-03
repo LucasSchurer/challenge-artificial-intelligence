@@ -1,0 +1,30 @@
+meta {
+  name: Add Document
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/knowledge_base/{{_kb_kb_id}}/documents
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "knowledge_base_id": "{{_kb_kb_id}}",
+    "document_type": "text",
+    "document_extension": "txt",
+    "name": "Apresentação",
+    "data": "U2lzdGVtYXMgZGVzZW52b2x2aWRvcyBwYXJhIGEgcGxhdGFmb3JtYSB3ZWIgdXRpbGl6YW0gYSBsaW5ndWFnZW0gSFRNTCBwYXJhIGEgZXhpYmnDp8OjbyBkZSBjb250ZcO6ZG8sIHRhbnRvIHBhcmEgcMOhZ2luYXMgZXN0w6F0aWNhcyBjb21vIGRpbsOibWljYXMuIENvbSBIVE1MNSDDqSBwb3Nzw612ZWwgY3JpYXIgcMOhZ2luYXMgd2ViIGNvbSBkaXZlcnNvcyByZWN1cnNvcyBwYXJhIGEgYXByZXNlbnRhw6fDo28gZGUgZGFkb3MgcG9yIG1laW8gZGUgbm92YXMgbWFyY2HDp8O1ZXMgcXVlIHBlcm1pdGVtIG8gdXNvIGRlIHNlbcOibnRpY2EgZSBhY2Vzc2liaWxpZGFkZSwgZmFjaWxpdGFuZG8gYSBwZXNxdWlzYSBwb3IgbW90b3JlcyBkZSBidXNjYSBhdXRvbcOhdGljYSBlIGRpc3Bvc2l0aXZvcyBwcsOzcHJpb3MgcGFyYSBkZWZpY2llbnRlcyB2aXN1YWlzIGUgYXVkaXRpdm9zLg0KDQpOZXN0YSBVbmlkYWRlIGRlIEFwcmVuZGl6YWdlbSwgdm9jw6ogdmFpIGVzdHVkYXIgYSBlc3RydXR1cmEgZGUgcMOhZ2luYXMgd2ViLCBhIGZvcm1hdGHDp8OjbyBkZSB0ZXh0byBlbSBkb2N1bWVudG9zIGhpcGVydGV4dG8gZSBhIGFwcmVzZW50YcOnw6NvIGRlIGxpbmtzLCBsaXN0YXMgZSB0YWJlbGFzIGVtIEhUTUw1Lg0KDQpCb25zIGVzdHVkb3MuDQoNCkFvIGZpbmFsIGRlc3RhIFVuaWRhZGUgZGUgQXByZW5kaXphZ2VtLCB2b2PDqiBkZXZlIGFwcmVzZW50YXIgb3Mgc2VndWludGVzIGFwcmVuZGl6YWRvczoNCkRlZmluaXIgYSBlc3RydXR1cmEgZGUgdW1hIHDDoWdpbmEgd2ViIGNvbSBIVE1MNS4NCkFwbGljYXIgZm9ybWF0YcOnw6NvIGRlIHRleHRvIGVtIHVtYSBww6FnaW5hIHdlYiBjb20gSFRNTDUuDQpEZXNlbnZvbHZlciBsaXN0YXMgZSB0YWJlbGFzIGVtIHVtYSBww6FnaW5hIHdlYiBjb20gSFRNTDUu"
+  }
+}
+
+script:post-response {
+  bru.setVar("_kb_document_id", res.body.document_id)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

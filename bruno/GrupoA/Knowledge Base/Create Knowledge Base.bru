@@ -1,0 +1,26 @@
+meta {
+  name: Create Knowledge Base
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/knowledge_base
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    
+  }
+}
+
+script:post-response {
+  bru.setVar("_kb_kb_id", res.body.knowledge_base_id)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
