@@ -154,20 +154,20 @@ KNOWLEDGE_BASE_ID=5b0b698f-2a01-4404-9ea5-15ecbaecf87e
 
 #### 4. Executar a Aplicação
 ```bash
-uvicorn src.main:app --reload
+uvicorn src.main:app --reload --port 8080 --host 0.0.0.0
 ```
 
 #### 5. Indexar Recursos da Base de Conhecimento
 Com a aplicação rodando, execute a seguinte chamada para indexar os recursos da pasta `resources/`:
 
 ```bash
-curl -X POST "http://localhost:8000/knowledge_base/populate_test_data"
+curl -X POST "http://localhost:8080/knowledge_base/populate_test_data"
 ```
 
-Ou acesse via browser: http://localhost:8000/docs e execute o endpoint `POST /knowledge_base/populate_test_data`
+Ou acesse via browser: http://localhost:8080/docs e execute o endpoint `POST /knowledge_base/populate_test_data`
 
 ### Verificação da Instalação
 
-- Interface Principal: http://localhost:8000
-- Documentação da API: http://localhost:8000/docs
-- Verificar Knowledge Base: http://localhost:8000/knowledge_base
+- Interface Principal: http://localhost:8080
+- Documentação da API: http://localhost:8080/docs
+- Verificar Knowledge Base: http://localhost:8080/knowledge_base
