@@ -157,8 +157,21 @@ class KnowledgeBaseService:
                 message="RAG_TEST_DATA_DIR environment variable is not set.",
             )
 
+        knowledge_base_id = os.getenv(
+            "KNOWLEDGE_BASE_ID", "5b0b698f-2a01-4404-9ea5-15ecbaecf87e"
+        )
+
         with self.db_conn.get_session() as session:
-            knowledge_base = KnowledgeBase()
+            knowledge_base = (
+                session.query(KnowledgeBase).filter_by(id=knowledge_base_id).first()
+            )
+            if knowledge_base:
+                return ResponseDTO(
+                    status_code=400,
+                    message=f"Knowledge base with ID {knowledge_base_id} already exists.",
+                )
+
+            knowledge_base = KnowledgeBase(id=knowledge_base_id)
             session.add(knowledge_base)
             session.commit()
 
