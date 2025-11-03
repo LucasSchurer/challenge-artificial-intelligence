@@ -13,3 +13,10 @@ from .plan import (
     PlanWithAllMessagesDTO,
     ContentListDTO,
 )
+from .knowledge_base import (
+    KnowledgeBaseCreateDTO,
+    KnowledgeBaseDTO,
+    DocumentDTO,
+    DocumentCreateDTO,
+    DocumentListDTO,
+)

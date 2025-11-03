@@ -1,9 +1,7 @@
-from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException
-from sqlalchemy import ForeignKey, text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.tables import Base

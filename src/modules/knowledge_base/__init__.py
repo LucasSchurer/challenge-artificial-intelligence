@@ -1,0 +1,1 @@
+from .knowledge_base_routes import knowledge_base_router

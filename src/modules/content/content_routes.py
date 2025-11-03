@@ -3,18 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 
-from src.db.tables import User
-from src.dto import (
-    ChatDTO,
-    MessageDTO,
-    ResponseDTO,
-    PlanDTO,
-    ModuleListDTO,
-    ContentDTO,
-    ContentListDTO,
-    ModuleDTO,
-    PlanWithAllMessagesDTO,
-)
+from src.dto import ContentDTO, ContentListDTO, ResponseDTO
 from src.security import get_current_user
 
 from .content_service import content_service

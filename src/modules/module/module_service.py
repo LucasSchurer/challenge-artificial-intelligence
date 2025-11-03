@@ -1,31 +1,18 @@
-import json
+import os
+from concurrent.futures import ThreadPoolExecutor
 from typing import List
 from uuid import UUID
 
-import boto3
-from fastapi import HTTPException
-from mypy_boto3_bedrock_runtime.client import BedrockRuntimeClient
-from sqlalchemy.orm import Session
-
 from src.db import db_connection
-from src.db.tables import Chat, Message, User, Agent, Plan, Module, Content
+from src.db.tables import Agent, Module, Plan, User
 from src.dto import (
-    PlanCreateDTO,
-    PlanDTO,
-    ModuleListDTO,
-    ContentDTO,
     MessageDTO,
     MessageTextContentDTO,
     ModuleDTO,
-    PlanWithAllMessagesDTO,
+    ModuleListDTO,
     ResponseDTO,
-    ContentListDTO,
 )
-import os
-
 from src.llm import BedrockHandler
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import asyncio
 from src.modules.content.content_service import content_service
 
 
@@ -51,7 +38,9 @@ class ModuleService:
                     f"Agent with ID {module_outline_creator_agent_id} not found in the database."
                 )
 
-    def generate_modules(self, plan_id: UUID, user: User) -> List[ModuleDTO]:
+    def generate_modules(
+        self, plan_id: UUID, user: User, extra_information: str = None
+    ) -> List[ModuleDTO]:
         """Generate modules for a plan using AI agent.
 
         Will generate the modules assynchronously.
@@ -59,6 +48,7 @@ class ModuleService:
         Args:
             plan_id (UUID): The ID of the plan.
             user (User): The currently authenticated user.
+            extra_information (str, optional): Any extra information to guide module generation.
 
         Returns:
             List[ModuleDTO]: List of generated modules.
@@ -71,7 +61,8 @@ class ModuleService:
 
         with ThreadPoolExecutor(max_workers=5) as executor:
             futures = [
-                executor.submit(self.generate_module, m, user) for m in modules_ids
+                executor.submit(self.generate_module, m, user, extra_information)
+                for m in modules_ids
             ]
             results = [f.result() for f in futures]
 
@@ -82,7 +73,9 @@ class ModuleService:
 
             return ModuleDTO.from_entities(plan.modules)
 
-    def generate_module(self, module_id: UUID, user: User) -> ModuleDTO:
+    def generate_module(
+        self, module_id: UUID, user: User, extra_information: str = None
+    ) -> ModuleDTO:
         """Generate module contents using AI agent.
 
         Will generate the content assynchronously.
@@ -90,6 +83,7 @@ class ModuleService:
         Args:
             module_id (UUID): The ID of the module.
             user (User): The currently authenticated user.
+            extra_information (str, optional): Any extra information to guide content generation.
 
         Returns:
             ModuleDTO: The generated module data transfer object.
@@ -98,11 +92,13 @@ class ModuleService:
             module = Module.get_by_id(session, module_id, user.id)
             module.status = "creating_contents"
 
+            message_text = f"User Profile Data: {user.profile_info}\nPlan Title: {module.plan.title}\nPlan Description: {module.plan.description}\nModule Title: {module.title}. Module Description: {module.description}"
+            if extra_information:
+                message_text += f"\nExtra Information: {extra_information}"
+
             message = MessageDTO(
                 user_id=user.id,
-                content=MessageTextContentDTO(
-                    text=f"User Profile Data: {user.profile_info}\nPlan Title: {module.plan.title}\nPlan Description: {module.plan.description}\nModule Title: {module.title}. Module Description: {module.description}"
-                ),
+                content=MessageTextContentDTO(text=message_text),
                 role="user",
             )
 
@@ -118,17 +114,21 @@ class ModuleService:
             session.commit()
 
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [
-                executor.submit(
-                    content_service.generate_content,
-                    module_id,
-                    user.id,
-                    content.get("type", "text"),
-                    content.get("objective", ""),
-                    i,
-                )
-                for i, content in enumerate(contents)
-            ]
+            futures = []
+            for i, content in enumerate(contents):
+                content_type = content.get("type", None)
+                content_objective = content.get("content", None)
+                if content_type and content_objective:
+                    futures.append(
+                        executor.submit(
+                            content_service.generate_content,
+                            module_id,
+                            user.id,
+                            content_type,
+                            content_objective,
+                            i,
+                        )
+                    )
 
             results = [f.result() for f in futures]
 

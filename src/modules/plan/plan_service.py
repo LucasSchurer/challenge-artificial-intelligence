@@ -1,31 +1,12 @@
-import json
+import os
+from datetime import datetime
 from typing import List
 from uuid import UUID
 
-import boto3
-from fastapi import HTTPException
-from mypy_boto3_bedrock_runtime.client import BedrockRuntimeClient
-from sqlalchemy.orm import Session
-
 from src.db import db_connection
-from src.db.tables import Chat, Message, User, Agent, Plan, Module, Content
-from src.dto import (
-    PlanCreateDTO,
-    PlanDTO,
-    ModuleListDTO,
-    ContentDTO,
-    MessageDTO,
-    MessageTextContentDTO,
-    ModuleDTO,
-    PlanWithAllMessagesDTO,
-    ResponseDTO,
-    ContentListDTO,
-)
-import os
-
+from src.db.tables import Agent, Chat, Module, Plan, User
+from src.dto import MessageDTO, MessageTextContentDTO, PlanDTO, PlanWithAllMessagesDTO
 from src.llm import BedrockHandler
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import asyncio
 
 
 class PlanService:
@@ -73,6 +54,10 @@ class PlanService:
         """
         with self.db_conn.get_session() as session:
             plan = Plan.get_by_id(session, plan_id, user.id)
+
+            plan.last_viewed_at = datetime.now()
+            session.commit()
+
             return PlanWithAllMessagesDTO.from_entity(plan)
 
     def create_plan(self, user: User) -> PlanDTO:
@@ -91,6 +76,8 @@ class PlanService:
             session.flush()
 
             new_plan = Plan(user_id=user.id, chat_id=new_chat.id)
+            new_plan.created_at = datetime.now()
+            new_plan.last_viewed_at = datetime.now()
             session.add(new_plan)
 
             response_message = self.handler.complete(

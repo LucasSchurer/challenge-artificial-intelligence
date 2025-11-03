@@ -1,15 +1,14 @@
+from typing import Literal, Optional
 from uuid import UUID
 
 from pydantic import Field
 
-from src.dto import BaseDTO, MessageDTO
-from typing import Optional, Literal
-from src.db.tables import Plan
+from src.dto import BaseDTO
 
 
 class ContentBaseDTO(BaseDTO):
     module_id: UUID = Field(alias="module_id")
-    content_type: Literal["text"] = Field(alias="content_type")
+    content_type: Literal["text", "video", "image"] = Field(alias="content_type")
     title: str = Field(alias="title")
     order: int = Field(alias="order", default=0)
     status: Literal["created", "completed"] = Field(alias="status", default="created")

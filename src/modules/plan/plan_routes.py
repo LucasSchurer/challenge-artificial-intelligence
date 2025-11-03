@@ -1,24 +1,13 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Depends
 
-from src.db.tables import User
-from src.dto import (
-    ChatDTO,
-    MessageDTO,
-    ResponseDTO,
-    PlanDTO,
-    ModuleListDTO,
-    ContentDTO,
-    ContentListDTO,
-    ModuleDTO,
-    PlanWithAllMessagesDTO,
-)
+from src.dto import MessageDTO, PlanDTO, PlanWithAllMessagesDTO
+from src.modules.module.module_service import module_service
 from src.security import get_current_user
 
 from .plan_service import plan_service
-from src.modules.module.module_service import module_service
 
 plan_router = APIRouter()
 
@@ -51,7 +40,10 @@ def develop_plan(
 
     if plan_dto.last_message.content.data.get("ready_to_save", False):
         background_tasks.add_task(
-            module_service.generate_modules, plan_id, current_user
+            module_service.generate_modules,
+            plan_id,
+            current_user,
+            plan_dto.last_message.content.data.get("user_observations", None),
         )
 
     return plan_dto

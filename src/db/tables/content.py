@@ -1,12 +1,10 @@
-from datetime import datetime, timezone
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, text
-from sqlalchemy.dialects.postgresql import JSONB
+from fastapi import HTTPException
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.tables import Base
-from fastapi import HTTPException
 
 
 class Content(Base):
@@ -19,10 +17,15 @@ class Content(Base):
     order: Mapped[int] = mapped_column(nullable=False, default=0)
     status: Mapped[str] = mapped_column(nullable=False, default="created")
     description: Mapped[str] = mapped_column(nullable=True)
+    source_document_id: Mapped[UUID] = mapped_column(
+        ForeignKey("document.id"), nullable=True
+    )
 
     module: Mapped["Module"] = relationship(  # type: ignore
         "Module", back_populates="contents"
     )
+
+    source_document: Mapped["Document"] = relationship("Document", uselist=False)  # type: ignore
 
     @classmethod
     def get_by_id(cls, session, id, user_id: UUID = None):

@@ -6,3 +6,6 @@ from .agent import Agent
 from .content import Content
 from .module import Module
 from .plan import Plan
+from .chunk import Chunk
+from .document import Document
+from .knowledge_base import KnowledgeBase

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 templates = Jinja2Templates(directory="src/templates")
 interface_router = APIRouter()
@@ -36,9 +36,9 @@ async def avaliacao(request: Request):
     return templates.TemplateResponse("avaliacao.html", {"request": request})
 
 
-@interface_router.get("/biblioteca", response_class=HTMLResponse)
-async def biblioteca(request: Request):
-    return templates.TemplateResponse("biblioteca.html", {"request": request})
+@interface_router.get("/painel", response_class=HTMLResponse)
+async def painel(request: Request):
+    return templates.TemplateResponse("painel.html", {"request": request})
 
 
 @interface_router.get("/plano", response_class=HTMLResponse)

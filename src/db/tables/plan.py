@@ -20,6 +20,11 @@ class Plan(Base):
         server_default=text("now()"),
         nullable=False,
     )
+    last_viewed_at: Mapped[datetime] = mapped_column(
+        default=datetime.now(timezone.utc),
+        server_default=text("now()"),
+        nullable=False,
+    )
     status: Mapped[str] = mapped_column(nullable=False, default="creating_outline")
 
     modules: Mapped[list["Module"]] = relationship(  # type: ignore

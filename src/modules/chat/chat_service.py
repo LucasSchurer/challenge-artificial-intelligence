@@ -1,22 +1,11 @@
-import json
 from typing import List
 from uuid import UUID
 
-import boto3
 from fastapi import HTTPException
-from mypy_boto3_bedrock_runtime.client import BedrockRuntimeClient
-from sqlalchemy.orm import Session
 
 from src.db import db_connection
-from src.db.tables import Chat, Message, User, Agent
-from src.dto import (
-    ChatDTO,
-    MessageDictContentDTO,
-    MessageDTO,
-    MessageTextContentDTO,
-    ResponseDTO,
-)
-
+from src.db.tables import Chat, KnowledgeBase, Message, User
+from src.dto import ChatDTO, MessageDTO, ResponseDTO
 from src.llm import BedrockHandler
 
 
@@ -55,9 +44,17 @@ class ChatService:
             MessageDTO: The response message from the Bedrock model.
         """
         with self.db_conn.get_session() as session:
-            agent = session.get(Agent, "440f74fd-85b7-4342-b900-435cb1f04b06")
+
+            knowledge_base = KnowledgeBase.get_by_id(
+                session, "3efd8e45-e6ee-4bf5-8f3f-1b761428b940"
+            )
+
             response_message = self.handler.complete(
-                session=session, message=message, user=user, agent=agent
+                session=session,
+                message=message,
+                user=user,
+                agent=None,
+                knowledge_base=knowledge_base,
             )
             return response_message
 

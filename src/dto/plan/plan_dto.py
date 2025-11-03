@@ -1,10 +1,11 @@
+from datetime import datetime
+from typing import Literal, Optional
 from uuid import UUID
 
 from pydantic import Field
 
-from src.dto import BaseDTO, MessageDTO
-from typing import Optional, Literal
 from src.db.tables import Plan
+from src.dto import BaseDTO, MessageDTO
 
 
 class PlanBaseDTO(BaseDTO):
@@ -33,11 +34,13 @@ class PlanBaseDTO(BaseDTO):
 class PlanDTO(PlanBaseDTO):
     id: UUID = Field(alias="plan_id")
 
+    created_at: datetime = Field(alias="created_at")
+    last_viewed_at: datetime = Field(alias="last_viewed_at")
     last_message: Optional[MessageDTO] = Field(alias="last_message", default=None)
 
     @classmethod
     def from_entity(cls: type["PlanDTO"], entity: Plan) -> "PlanDTO":
-        dto = cls.model_validate(entity)
+        dto = super().from_entity(entity)
 
         if entity.chat:
             last_message = entity.chat.messages[-1] if entity.chat.messages else None

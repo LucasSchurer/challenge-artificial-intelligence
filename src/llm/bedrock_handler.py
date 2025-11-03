@@ -7,15 +7,9 @@ from fastapi import HTTPException
 from mypy_boto3_bedrock_runtime.client import BedrockRuntimeClient
 from sqlalchemy.orm import Session
 
-from src.db import db_connection
-from src.db.tables import Chat, Message, User, Agent
-from src.dto import (
-    ChatDTO,
-    MessageDictContentDTO,
-    MessageDTO,
-    MessageTextContentDTO,
-    ResponseDTO,
-)
+from src.db.tables import Agent, Chat, KnowledgeBase, Message, User
+from src.dto import MessageDictContentDTO, MessageDTO, MessageTextContentDTO
+from src.rag import RAGHandler
 
 
 class BedrockHandler:
@@ -109,6 +103,7 @@ class BedrockHandler:
         user: User,
         system_prompt: str = None,
         agent: Agent = None,
+        knowledge_base: KnowledgeBase = None,
         model_id: str = "us.anthropic.claude-3-5-haiku-20241022-v1:0",
     ) -> MessageDTO:
         """Handle an incoming message and get a response from the Bedrock model.
@@ -125,6 +120,7 @@ class BedrockHandler:
         self.__create_db_message(session, chat, message)
 
         messages = chat.messages
+
         formatted_messages = [
             self.__format_message_for_bedrock(msg) for msg in messages
         ]
@@ -141,6 +137,19 @@ class BedrockHandler:
             if agent.output_format:
                 output_format = agent.output_format
                 output_format = {"toolSpec": output_format}
+
+        if knowledge_base:
+            rag_handler = RAGHandler()
+            referenced_documents, retrieved_context = rag_handler.query(
+                session, knowledge_base, message
+            )
+            if retrieved_context:
+                system.append(
+                    {
+                        "text": f"[START RAG CONTEXT]:\n{retrieved_context}[END RAG CONTEXT]"
+                    }
+                )
+
         try:
             if output_format:
                 response = self.client.converse(
@@ -154,6 +163,7 @@ class BedrockHandler:
                         },
                     },
                 )
+
                 content = MessageDictContentDTO(
                     data=response["output"]["message"]["content"][0]["toolUse"][
                         "input"
