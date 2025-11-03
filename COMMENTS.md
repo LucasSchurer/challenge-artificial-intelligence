@@ -1,5 +1,104 @@
 # +A Educação - Engenheiro de Inteligência Artificial
 
+## Decisão da Arquitetura Utilizada
+
+### Arquitetura Geral
+
+1. **Backend**: FastAPI como framework principal
+2. **Banco de Dados**: PostgreSQL + pgvector para dados relacionais e vector store
+3. **IA Generativa**: Utilizado AWS Bedrock para realizar chamadas para LLMs
+4. **RAG Personalizado**: Sistema próprio de indexação para processamento multimodal
+5. **Frontend**: HTML/CSS/JS vanilla - desenvolvido como protótipo e implementado **completamente através IA**.
+
+### Sistema RAG Multimodal
+Foi implementado um sistema RAG completo que processa diferentes tipos de conteúdo:
+
+- **Textos (.txt, .json)**: Processamento direto com chunking inteligente
+- **Imagens (.png, .jpg)**: OCR via AWS Bedrock para extrair texto ou descrever conteúdo
+- **PDFs**: Extração de texto + OCR para imagens presentes
+- **Vídeos (.mp4)**: Transcrição automática com OpenAI Whisper em português
+
+**Pipeline de Indexação:**
+1. Upload → Extração de conteúdo → Chunking → Embedding (Cohere v4) → Armazenamento vetorial
+
+### Agentes Especializados
+Sistema de agentes com prompts otimizados para tarefas específicas:
+
+- **Profile Assessment Agent**: Avalia perfil de aprendizagem através de conversação natural
+- **Plan Outline Creator**: Gera estruturas de planos baseadas no perfil do usuário
+- **Module Outline Creator**: Detalha módulos específicos com objetivos e conteúdos
+- **Text Content Creator**: Produz conteúdo adaptativo usando contexto RAG
+
+Para a geração de **vídeos** e **imagens**, é realizado uma busca no banco de dados vetorial e o resultado é retornado como o conteúdo.
+
+## Requisitos Obrigatórios Entregues
+
+### Etapa 1: Indexação dos Dados
+
+**Sistema RAG Completo Implementado:**
+- Indexação de textos com busca por palavras-chave e frases relevantes
+- Processamento de PDFs com extração de texto e metadados
+- Transcrição de vídeos MP4 usando OpenAI Whisper
+- OCR de imagens (PNG/JPG) via AWS Bedrock
+- Armazenamento vetorial com PostgreSQL + pgvector para busca eficiente
+
+**Tipos de dados suportados:**
+- Textos (.txt, .json)¹
+- PDFs com extração completa de conteúdo
+- Vídeos (.mp4) com transcrição automática
+- Imagens (.png, .jpg) com OCR e descrição
+
+*¹: Mais detalhes sobre o JSON são discutidos na seção de Melhorias.*
+
+### Etapa 2: Prompt de Aprendizagem Adaptativa
+
+**Assessment de Perfil Implementado:**
+- Sistema de avaliação durante criação da conta ou quando usuário decide refazer
+- Identificação de dificuldades e lacunas de conhecimento através de perguntas direcionadas
+- Detecção de preferências de formato de aprendizado (texto, vídeo, áudio)
+- Criação de perfil personalizado armazenado no banco de dados
+
+**Geração de Conteúdo Dinâmico:**
+- Conteúdos textuais adaptativos baseados no perfil do usuário
+- Recomendações de vídeos relevantes da base de conhecimento
+- Sugestões de materiais complementares (PDFs, textos)
+- Personalização completa baseada nas preferências identificadas
+
+## O que Melhoraria se Tivesse Mais Tempo
+
+### 1. Melhorias no Sistema RAG
+- **Chunking Inteligente para JSONs**: Atualmente existe problema com a separação de chunks em arquivos JSON, resultando em similaridade muito alta para todos os casos. Por isso optei por remover alguns arquivos JSON do processamento.
+- **Estratégias de Chunking Específicas**: Implementar diferentes estratégias de divisão baseadas no tipo de conteúdo (código, texto corrido, listas, etc.).
+
+### 2. Evolução do Sistema de Perfil
+- **Agente de Feedback Pós-Plano**: Inserção de um novo agente capaz de coletar informações depois de um plano ter sido criado, para atualizar automaticamente o perfil do usuário.
+- **Histórico de Aprendizagem**: Levar em consideração planos já concluídos do usuário para construção mais precisa do seu perfil de aprendizagem.
+
+### 3. Geração de Conteúdo Multimodal
+- **Síntese de Voz**: Realizar a geração de conteúdos de áudio através de sintetização do texto (AWS Polly/OpenAI Text-To-Speech/ElevenLabs).
+- **Geração de Imagens**: Criar imagens explicativas e diagramas usando modelos generativos.
+- **Geração de Vídeos**: Produzir vídeos educacionais ao invés de apenas sugestões por RAG.
+
+### 4. Correções Técnicas
+- **Encoding de Caracteres**: Corrigir a formatação errada de textos com acentos do modelo (às vezes retorna unicode malformado).
+- **Validação de Saída**: Implementar pós-processamento para garantir formatação correta dos textos gerados.
+
+### 5. Novos Tipos de Conteúdo
+- **Sistema de Quiz**: Introduzir tipo de conteúdo em formato de quiz interativo com correção automática.
+- **Exercícios Práticos**: Implementar exercícios de programação com validação automática de código.
+
+### 6. Analytics e Monitoramento
+- **Dashboard de Usuário**: Estatísticas de quantos planos foram concluídos, tempo médio de conclusão, progresso por tópico.
+- **Painel Administrativo**: Visualização de tópicos mais criados pelos alunos, identificação de lacunas no conteúdo, métricas de engajamento.
+
+### 7. Melhorias de Infraestrutura
+- **Cache Inteligente**: Implementar Redis para cache de embeddings e respostas frequentes.
+- **Processamento Assíncrono**: Queue system para processamento de documentos grandes sem bloquear a interface.
+
+### 8. Experiência do Usuário
+- **Gamificação**: Sistema de pontos, badges e rankings para aumentar engajamento.
+- **Colaboração**: Possibilidade de compartilhar planos e criar grupos de estudo.
+
 ## Inicialização do Projeto
 
 ### Pré-requisitos
