@@ -12,6 +12,7 @@ from src.dto import (
     ResponseDTO,
 )
 from src.rag import RAGHandler
+import base64
 
 
 class KnowledgeBaseService:
@@ -121,7 +122,9 @@ class KnowledgeBaseService:
         """
         with self.db_conn.get_session() as session:
             document = Document.get_by_id(session, document_id)
-            return DocumentDTO.from_entity(document)
+            document_dto = DocumentDTO.from_entity(document)
+            document_dto.data = base64.b64encode(document.data).decode("utf-8")
+            return document_dto
 
     def remove_document(
         self, knowledge_base_id: UUID, document_id: UUID

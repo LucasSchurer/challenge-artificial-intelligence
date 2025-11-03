@@ -18,6 +18,7 @@ class ContentBaseDTO(BaseDTO):
 class ContentDTO(ContentBaseDTO):
     id: UUID = Field(alias="content_id")
     text_content: Optional[str] = Field(alias="text_content", default=None)
+    source_document_id: Optional[UUID] = Field(alias="source_document_id", default=None)
 
 
 class ContentListDTO(ContentBaseDTO):

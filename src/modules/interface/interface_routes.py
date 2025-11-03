@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -49,3 +50,11 @@ async def plano(request: Request):
 @interface_router.get("/meus-planos", response_class=HTMLResponse)
 async def meus_planos(request: Request):
     return templates.TemplateResponse("meus-planos.html", {"request": request})
+
+
+@interface_router.get("/config")
+async def get_config():
+    """Get frontend configuration including knowledge base ID"""
+    return {
+        "knowledge_base_id": os.getenv("KNOWLEDGE_BASE_ID")
+    }
